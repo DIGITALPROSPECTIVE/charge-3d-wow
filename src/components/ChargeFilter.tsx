@@ -24,40 +24,38 @@ const ChargeFilter: React.FC<ChargeFilterProps> = ({
   totalResults
 }) => {
   return (
-    <Card className="glass-card card-3d shadow-3d border-0 animate-slide-up mb-4 sm:mb-6">
-      <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="text-white flex flex-col sm:flex-row sm:items-center gap-2">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" />
-            <span className="text-sm sm:text-base">Recherche et filtres</span>
-          </div>
-          <span className="text-xs sm:text-sm font-normal text-white/60 sm:ml-auto">
+    <Card className="glass-card card-3d shadow-3d border-0 animate-slide-up mb-6">
+      <CardHeader>
+        <CardTitle className="text-white flex items-center gap-2">
+          <Filter className="h-5 w-5 text-blue-300" />
+          Recherche et filtres
+          <span className="text-sm font-normal text-white/60 ml-auto">
             {totalResults} résultat(s)
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <label className="text-white/80 text-xs sm:text-sm">Rechercher</label>
+            <label className="text-white/80 text-sm">Rechercher</label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 h-3 w-3 sm:h-4 sm:w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 h-4 w-4" />
               <Input
                 value={searchTerm}
                 onChange={(e) => onSearchChange(e.target.value)}
                 placeholder="Description de la charge..."
-                className="glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 pl-8 sm:pl-10 text-sm h-9 sm:h-10"
+                className="glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 pl-10"
               />
             </div>
           </div>
           
           <div className="space-y-2">
-            <label className="text-white/80 text-xs sm:text-sm">Catégorie</label>
+            <label className="text-white/80 text-sm">Catégorie</label>
             <Select value={selectedCategory} onValueChange={onCategoryChange}>
-              <SelectTrigger className="glass-card border-white/20 text-white h-9 sm:h-10 text-sm">
+              <SelectTrigger className="glass-card border-white/20 text-white">
                 <SelectValue placeholder="Toutes les catégories" />
               </SelectTrigger>
-              <SelectContent className="glass-card border-white/20 z-50">
+              <SelectContent className="glass-card border-white/20">
                 <SelectItem value="all">Toutes les catégories</SelectItem>
                 <SelectItem value="energie">Énergie</SelectItem>
                 <SelectItem value="transport">Transport</SelectItem>
@@ -73,14 +71,14 @@ const ChargeFilter: React.FC<ChargeFilterProps> = ({
             </Select>
           </div>
           
-          <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-            <label className="text-white/80 text-xs sm:text-sm">Actions</label>
+          <div className="space-y-2">
+            <label className="text-white/80 text-sm">Actions</label>
             <Button
               onClick={onClearFilters}
               variant="outline"
-              className="w-full border-white/20 text-white hover:bg-white/10 h-9 sm:h-10 text-sm"
+              className="w-full border-white/20 text-white hover:bg-white/10"
             >
-              <X className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+              <X className="w-4 h-4 mr-2" />
               Effacer les filtres
             </Button>
           </div>
