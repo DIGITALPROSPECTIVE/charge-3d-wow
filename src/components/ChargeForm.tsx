@@ -7,12 +7,18 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Charge } from '../types/charge';
 import { calculateTTC, generateId } from '../utils/chargeUtils';
-import { Plus, Edit, Calculator } from 'lucide-react';
+import { Plus, Edit, Calculator, AlertCircle } from 'lucide-react';
 
 interface ChargeFormProps {
   onAddCharge: (charge: Charge) => void;
   editingCharge?: Charge | null;
   onCancelEdit: () => void;
+}
+
+interface FormErrors {
+  description?: string;
+  montantHT?: string;
+  categorie?: string;
 }
 
 const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onCancelEdit }) => {
@@ -22,6 +28,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   const [categorie, setCategorie] = useState('');
   const [montantTTC, setMontantTTC] = useState(0);
   const [montantTVA, setMontantTVA] = useState(0);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     if (editingCharge) {
@@ -42,16 +49,41 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     setMontantTVA(tvaAmount);
   }, [montantHT, tauxTVA]);
 
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!description.trim()) {
+      newErrors.description = 'La description est obligatoire';
+    } else if (description.trim().length < 3) {
+      newErrors.description = 'La description doit contenir au moins 3 caractères';
+    }
+
+    if (!montantHT) {
+      newErrors.montantHT = 'Le montant HT est obligatoire';
+    } else if (parseFloat(montantHT) <= 0) {
+      newErrors.montantHT = 'Le montant HT doit être supérieur à 0';
+    } else if (parseFloat(montantHT) > 999999) {
+      newErrors.montantHT = 'Le montant HT ne peut pas dépasser 999 999 €';
+    }
+
+    if (!categorie) {
+      newErrors.categorie = 'La catégorie est obligatoire';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!description || !montantHT || !categorie) {
+    if (!validateForm()) {
       return;
     }
 
     const charge: Charge = {
       id: editingCharge ? editingCharge.id : generateId(),
-      description,
+      description: description.trim(),
       montantHT: parseFloat(montantHT),
       tauxTVA: parseFloat(tauxTVA),
       montantTTC,
@@ -63,10 +95,12 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     onAddCharge(charge);
     
     if (!editingCharge) {
+      // Réinitialiser le formulaire uniquement lors d'un ajout
       setDescription('');
       setMontantHT('');
       setTauxTVA('20');
       setCategorie('');
+      setErrors({});
     }
   };
 
@@ -75,6 +109,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     setMontantHT('');
     setTauxTVA('20');
     setCategorie('');
+    setErrors({});
     onCancelEdit();
   };
 
@@ -90,21 +125,43 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-white/80">Description</Label>
+              <Label htmlFor="description" className="text-white/80">Description *</Label>
               <Input
                 id="description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (errors.description) {
+                    setErrors({ ...errors, description: undefined });
+                  }
+                }}
                 placeholder="Ex: Facture électricité"
-                required
-                className="glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400"
+                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                  errors.description ? 'border-red-500' : ''
+                }`}
               />
+              {errors.description && (
+                <div className="flex items-center gap-1 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.description}
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="categorie" className="text-white/80">Catégorie</Label>
-              <Select value={categorie} onValueChange={setCategorie} required>
-                <SelectTrigger className="glass-card border-white/20 text-white">
+              <Label htmlFor="categorie" className="text-white/80">Catégorie *</Label>
+              <Select 
+                value={categorie} 
+                onValueChange={(value) => {
+                  setCategorie(value);
+                  if (errors.categorie) {
+                    setErrors({ ...errors, categorie: undefined });
+                  }
+                }}
+              >
+                <SelectTrigger className={`glass-card border-white/20 text-white ${
+                  errors.categorie ? 'border-red-500' : ''
+                }`}>
                   <SelectValue placeholder="Sélectionner une catégorie" />
                 </SelectTrigger>
                 <SelectContent className="glass-card border-white/20">
@@ -116,23 +173,42 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   <SelectItem value="autre">Autre</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.categorie && (
+                <div className="flex items-center gap-1 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.categorie}
+                </div>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="montantHT" className="text-white/80">Montant HT (€)</Label>
+              <Label htmlFor="montantHT" className="text-white/80">Montant HT (€) *</Label>
               <Input
                 id="montantHT"
                 type="number"
                 value={montantHT}
-                onChange={(e) => setMontantHT(e.target.value)}
+                onChange={(e) => {
+                  setMontantHT(e.target.value);
+                  if (errors.montantHT) {
+                    setErrors({ ...errors, montantHT: undefined });
+                  }
+                }}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                required
-                className="glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400"
+                max="999999"
+                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                  errors.montantHT ? 'border-red-500' : ''
+                }`}
               />
+              {errors.montantHT && (
+                <div className="flex items-center gap-1 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.montantHT}
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
@@ -155,7 +231,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 <Calculator className="w-4 h-4" />
                 Montant TTC (€)
               </Label>
-              <div className="glass-card border-white/20 p-2 rounded-md">
+              <div className="glass-card border-white/20 p-3 rounded-md">
                 <span className="text-white font-semibold text-lg">
                   {montantTTC.toFixed(2)} €
                 </span>
@@ -185,6 +261,10 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 Annuler
               </Button>
             )}
+          </div>
+
+          <div className="text-xs text-white/60 mt-4">
+            * Champs obligatoires
           </div>
         </form>
       </CardContent>

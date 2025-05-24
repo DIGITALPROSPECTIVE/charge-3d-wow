@@ -1,16 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Charge } from '../types/charge';
 import { calculateSummary } from '../utils/chargeUtils';
 import ChargeForm from './ChargeForm';
 import ChargeList from './ChargeList';
 import ChargeSummary from './ChargeSummary';
 import SessionManager from './SessionManager';
+import ChargeFilter from './ChargeFilter';
+import DeleteConfirmDialog from './DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
 
 const ChargeManager: React.FC = () => {
   const [charges, setCharges] = useState<Charge[]>([]);
   const [editingCharge, setEditingCharge] = useState<Charge | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [chargeToDelete, setChargeToDelete] = useState<Charge | null>(null);
   const { toast } = useToast();
 
   // Charger les charges depuis le localStorage au démarrage
@@ -25,14 +31,29 @@ const ChargeManager: React.FC = () => {
         setCharges(parsedCharges);
       } catch (error) {
         console.error('Erreur lors du chargement des charges:', error);
+        toast({
+          title: "Erreur de chargement",
+          description: "Impossible de charger les charges sauvegardées.",
+          variant: "destructive"
+        });
       }
     }
-  }, []);
+  }, [toast]);
 
   // Sauvegarder les charges dans le localStorage à chaque modification
   useEffect(() => {
     localStorage.setItem('charges', JSON.stringify(charges));
   }, [charges]);
+
+  // Filtrer les charges selon les critères de recherche
+  const filteredCharges = useMemo(() => {
+    return charges.filter(charge => {
+      const matchesSearch = charge.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          charge.categorie.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || charge.categorie === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [charges, searchTerm, selectedCategory]);
 
   const handleAddCharge = (charge: Charge) => {
     if (editingCharge) {
@@ -57,13 +78,22 @@ const ChargeManager: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDeleteCharge = (id: string) => {
-    setCharges(charges.filter(c => c.id !== id));
-    toast({
-      title: "Charge supprimée",
-      description: "La charge a été supprimée avec succès.",
-      variant: "destructive"
-    });
+  const handleDeleteRequest = (charge: Charge) => {
+    setChargeToDelete(charge);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (chargeToDelete) {
+      setCharges(charges.filter(c => c.id !== chargeToDelete.id));
+      toast({
+        title: "Charge supprimée",
+        description: "La charge a été supprimée avec succès.",
+        variant: "destructive"
+      });
+    }
+    setDeleteDialogOpen(false);
+    setChargeToDelete(null);
   };
 
   const handleCancelEdit = () => {
@@ -73,6 +103,14 @@ const ChargeManager: React.FC = () => {
   const handleImportCharges = (importedCharges: Charge[]) => {
     setCharges(importedCharges);
     setEditingCharge(null);
+    // Réinitialiser les filtres après import
+    setSearchTerm('');
+    setSelectedCategory('all');
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('all');
   };
 
   const summary = calculateSummary(charges);
@@ -104,11 +142,29 @@ const ChargeManager: React.FC = () => {
           onCancelEdit={handleCancelEdit}
         />
 
+        {/* Filtres de recherche */}
+        <ChargeFilter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          onClearFilters={handleClearFilters}
+          totalResults={filteredCharges.length}
+        />
+
         {/* Liste des charges */}
         <ChargeList 
-          charges={charges}
+          charges={filteredCharges}
           onEditCharge={handleEditCharge}
-          onDeleteCharge={handleDeleteCharge}
+          onDeleteCharge={handleDeleteRequest}
+        />
+
+        {/* Dialog de confirmation de suppression */}
+        <DeleteConfirmDialog
+          isOpen={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          onConfirm={handleConfirmDelete}
+          chargeDescription={chargeToDelete?.description || ''}
         />
       </div>
     </div>
