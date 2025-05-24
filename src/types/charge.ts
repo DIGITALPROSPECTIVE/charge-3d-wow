@@ -7,7 +7,12 @@ export interface Charge {
   montantTTC: number;
   montantTVA: number;
   categorie: string;
+  typeCharge: 'mensuelle' | 'exceptionnelle';
   dateCreation: Date;
+  // Champs spécifiques aux frais kilométriques
+  distanceKm?: number;
+  puissanceCV?: number;
+  distanceTotaleAnnuelle?: number;
 }
 
 export interface ChargeSummary {
@@ -15,4 +20,12 @@ export interface ChargeSummary {
   totalTVA: number;
   totalTTC: number;
   nombreCharges: number;
+}
+
+export interface MileageRates {
+  [key: string]: {
+    upTo5000: number;
+    from5001To20000: { rate: number; fixed: number };
+    above20000: number;
+  };
 }

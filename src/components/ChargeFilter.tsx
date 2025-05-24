@@ -62,6 +62,10 @@ const ChargeFilter: React.FC<ChargeFilterProps> = ({
                 <SelectItem value="fournitures">Fournitures</SelectItem>
                 <SelectItem value="services">Services</SelectItem>
                 <SelectItem value="maintenance">Maintenance</SelectItem>
+                <SelectItem value="frais-de-bouche">Frais de bouche</SelectItem>
+                <SelectItem value="hotel">Hôtel</SelectItem>
+                <SelectItem value="airbnb">Airbnb</SelectItem>
+                <SelectItem value="frais-kilometriques">Frais kilométriques</SelectItem>
                 <SelectItem value="autre">Autre</SelectItem>
               </SelectContent>
             </Select>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Charge } from '../types/charge';
 import { calculateSummary } from '../utils/chargeUtils';
@@ -26,7 +25,8 @@ const ChargeManager: React.FC = () => {
       try {
         const parsedCharges = JSON.parse(savedCharges).map((charge: any) => ({
           ...charge,
-          dateCreation: new Date(charge.dateCreation)
+          dateCreation: new Date(charge.dateCreation),
+          typeCharge: charge.typeCharge || 'exceptionnelle' // Migration pour les anciennes charges
         }));
         setCharges(parsedCharges);
       } catch (error) {
@@ -78,9 +78,12 @@ const ChargeManager: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDeleteRequest = (charge: Charge) => {
-    setChargeToDelete(charge);
-    setDeleteDialogOpen(true);
+  const handleDeleteRequest = (chargeId: string) => {
+    const charge = charges.find(c => c.id === chargeId);
+    if (charge) {
+      setChargeToDelete(charge);
+      setDeleteDialogOpen(true);
+    }
   };
 
   const handleConfirmDelete = () => {
