@@ -5,6 +5,7 @@ import { calculateSummary } from '../utils/chargeUtils';
 import ChargeForm from './ChargeForm';
 import ChargeList from './ChargeList';
 import ChargeSummary from './ChargeSummary';
+import SessionManager from './SessionManager';
 import { useToast } from '@/hooks/use-toast';
 
 const ChargeManager: React.FC = () => {
@@ -69,6 +70,11 @@ const ChargeManager: React.FC = () => {
     setEditingCharge(null);
   };
 
+  const handleImportCharges = (importedCharges: Charge[]) => {
+    setCharges(importedCharges);
+    setEditingCharge(null);
+  };
+
   const summary = calculateSummary(charges);
 
   return (
@@ -87,6 +93,9 @@ const ChargeManager: React.FC = () => {
 
         {/* Résumé des charges */}
         <ChargeSummary summary={summary} charges={charges} />
+
+        {/* Gestion de session */}
+        <SessionManager charges={charges} onImportCharges={handleImportCharges} />
 
         {/* Formulaire d'ajout/modification */}
         <ChargeForm 
