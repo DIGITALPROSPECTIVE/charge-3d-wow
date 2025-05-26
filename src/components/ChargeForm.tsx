@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Charge } from '../types/charge';
 import { calculateTTC, generateId } from '../utils/chargeUtils';
 import { calculateMileageAmount } from '../utils/mileageUtils';
-import { Plus, Edit, Calculator, AlertCircle, Car, Clock, Zap } from 'lucide-react';
+import { Plus, Edit, Calculator, AlertCircle, Car, Clock, Zap, Calendar } from 'lucide-react';
 
 interface ChargeFormProps {
   onAddCharge: (charge: Charge) => void;
@@ -32,6 +33,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   const [tauxTVA, setTauxTVA] = useState('20');
   const [categorie, setCategorie] = useState('');
   const [typeCharge, setTypeCharge] = useState<'mensuelle' | 'exceptionnelle'>('exceptionnelle');
+  const [dateEcheance, setDateEcheance] = useState<Date | undefined>();
   const [montantTTC, setMontantTTC] = useState(0);
   const [montantTVA, setMontantTVA] = useState(0);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -43,19 +45,17 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
 
   const isKilometricExpense = categorie === 'frais-kilometriques';
 
-  // Debug logs pour mobile
-  console.log('ChargeForm render - categorie:', categorie);
-  console.log('ChargeForm render - typeCharge:', typeCharge);
-  console.log('ChargeForm render - errors:', errors);
+  console.log('ChargeForm render - categorie:', categorie, 'isKilometricExpense:', isKilometricExpense);
 
   useEffect(() => {
     if (editingCharge) {
-      console.log('Editing charge:', editingCharge);
+      console.log('Loading editing charge:', editingCharge);
       setDescription(editingCharge.description);
       setMontantHT(editingCharge.montantHT.toString());
       setTauxTVA(editingCharge.tauxTVA.toString());
       setCategorie(editingCharge.categorie);
       setTypeCharge(editingCharge.typeCharge);
+      setDateEcheance(editingCharge.dateEcheance);
       setMontantTTC(editingCharge.montantTTC);
       setMontantTVA(editingCharge.montantTVA);
       setDistanceKm(editingCharge.distanceKm?.toString() || '');
@@ -69,15 +69,27 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     
     // Calcul automatique pour les frais kilométriques
     if (isKilometricExpense && distanceKm && puissanceCV && distanceTotaleAnnuelle) {
-      console.log('Calculating mileage:', { distanceKm, puissanceCV, distanceTotaleAnnuelle });
-      const calculatedAmount = calculateMileageAmount(
-        parseFloat(distanceKm),
-        parseInt(puissanceCV),
-        parseFloat(distanceTotaleAnnuelle)
-      );
-      ht = calculatedAmount;
-      setMontantHT(calculatedAmount.toFixed(2));
-      console.log('Calculated mileage amount:', calculatedAmount);
+      try {
+        console.log('Calculating mileage with values:', { 
+          distance: parseFloat(distanceKm), 
+          power: parseInt(puissanceCV), 
+          annual: parseFloat(distanceTotaleAnnuelle) 
+        });
+        
+        const calculatedAmount = calculateMileageAmount(
+          parseFloat(distanceKm),
+          parseInt(puissanceCV),
+          parseFloat(distanceTotaleAnnuelle)
+        );
+        
+        if (calculatedAmount > 0) {
+          ht = calculatedAmount;
+          setMontantHT(calculatedAmount.toFixed(2));
+          console.log('Successfully calculated mileage amount:', calculatedAmount);
+        }
+      } catch (error) {
+        console.error('Error calculating mileage:', error);
+      }
     }
     
     const tva = parseFloat(tauxTVA) || 0;
@@ -130,7 +142,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       newErrors.typeCharge = 'Le type de charge est obligatoire';
     }
 
-    console.log('Validation errors:', newErrors);
+    console.log('Validation result:', { errors: newErrors, isValid: Object.keys(newErrors).length === 0 });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,6 +167,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       categorie,
       typeCharge,
       dateCreation: editingCharge ? editingCharge.dateCreation : new Date(),
+      dateEcheance,
       ...(isKilometricExpense && {
         distanceKm: parseFloat(distanceKm),
         puissanceCV: parseInt(puissanceCV),
@@ -173,6 +186,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       setTauxTVA('20');
       setCategorie('');
       setTypeCharge('exceptionnelle');
+      setDateEcheance(undefined);
       setDistanceKm('');
       setPuissanceCV('');
       setDistanceTotaleAnnuelle('');
@@ -187,6 +201,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     setTauxTVA('20');
     setCategorie('');
     setTypeCharge('exceptionnelle');
+    setDateEcheance(undefined);
     setDistanceKm('');
     setPuissanceCV('');
     setDistanceTotaleAnnuelle('');
@@ -201,17 +216,14 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       setDistanceKm('');
       setPuissanceCV('');
       setDistanceTotaleAnnuelle('');
+      if (!montantHT) {
+        setMontantHT('');
+      }
+    } else {
+      setMontantHT('');
     }
     if (errors.categorie) {
       setErrors({ ...errors, categorie: undefined });
-    }
-  };
-
-  const handleTypeChargeChange = (value: 'mensuelle' | 'exceptionnelle') => {
-    console.log('Type charge changed to:', value);
-    setTypeCharge(value);
-    if (errors.typeCharge) {
-      setErrors({ ...errors, typeCharge: undefined });
     }
   };
 
@@ -250,63 +262,82 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               )}
             </div>
             
-            <div className="space-y-3">
-              <Label htmlFor="typeCharge" className="text-white/80 flex items-center gap-2 text-base">
-                <Clock className="w-4 h-4" />
-                Type de charge *
-              </Label>
-              <Select 
-                value={typeCharge} 
-                onValueChange={handleTypeChargeChange}
-              >
-                <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
-                  errors.typeCharge ? 'border-red-500' : ''
-                }`}>
-                  <SelectValue placeholder="Sélectionner le type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="exceptionnelle">Exceptionnelle</SelectItem>
-                  <SelectItem value="mensuelle">Mensuelle</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.typeCharge && (
-                <div className="flex items-center gap-1 text-red-400 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  {errors.typeCharge}
-                </div>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <Label htmlFor="typeCharge" className="text-white/80 flex items-center gap-2 text-base">
+                  <Clock className="w-4 h-4" />
+                  Type de charge *
+                </Label>
+                <Select 
+                  value={typeCharge} 
+                  onValueChange={(value: 'mensuelle' | 'exceptionnelle') => {
+                    setTypeCharge(value);
+                    if (errors.typeCharge) {
+                      setErrors({ ...errors, typeCharge: undefined });
+                    }
+                  }}
+                >
+                  <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
+                    errors.typeCharge ? 'border-red-500' : ''
+                  }`}>
+                    <SelectValue placeholder="Sélectionner le type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="exceptionnelle">Exceptionnelle</SelectItem>
+                    <SelectItem value="mensuelle">Mensuelle</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.typeCharge && (
+                  <div className="flex items-center gap-1 text-red-400 text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    {errors.typeCharge}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <Label htmlFor="categorie" className="text-white/80 text-base">Catégorie *</Label>
+                <Select 
+                  value={categorie} 
+                  onValueChange={handleCategorieChange}
+                >
+                  <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
+                    errors.categorie ? 'border-red-500' : ''
+                  }`}>
+                    <SelectValue placeholder="Sélectionner une catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="energie">Énergie</SelectItem>
+                    <SelectItem value="transport">Transport</SelectItem>
+                    <SelectItem value="fournitures">Fournitures</SelectItem>
+                    <SelectItem value="services">Services</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="frais-de-bouche">Frais de bouche</SelectItem>
+                    <SelectItem value="hotel">Hôtel</SelectItem>
+                    <SelectItem value="airbnb">Airbnb</SelectItem>
+                    <SelectItem value="frais-kilometriques">Frais kilométriques</SelectItem>
+                    <SelectItem value="autre">Autre</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.categorie && (
+                  <div className="flex items-center gap-1 text-red-400 text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    {errors.categorie}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="categorie" className="text-white/80 text-base">Catégorie *</Label>
-              <Select 
-                value={categorie} 
-                onValueChange={handleCategorieChange}
-              >
-                <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
-                  errors.categorie ? 'border-red-500' : ''
-                }`}>
-                  <SelectValue placeholder="Sélectionner une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="energie">Énergie</SelectItem>
-                  <SelectItem value="transport">Transport</SelectItem>
-                  <SelectItem value="fournitures">Fournitures</SelectItem>
-                  <SelectItem value="services">Services</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="frais-de-bouche">Frais de bouche</SelectItem>
-                  <SelectItem value="hotel">Hôtel</SelectItem>
-                  <SelectItem value="airbnb">Airbnb</SelectItem>
-                  <SelectItem value="frais-kilometriques">Frais kilométriques</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.categorie && (
-                <div className="flex items-center gap-1 text-red-400 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  {errors.categorie}
-                </div>
-              )}
+              <Label className="text-white/80 flex items-center gap-2 text-base">
+                <Calendar className="w-4 h-4" />
+                Date d'échéance (optionnelle)
+              </Label>
+              <DatePicker
+                date={dateEcheance}
+                onDateChange={setDateEcheance}
+                placeholder="Sélectionner une date d'échéance"
+              />
             </div>
           </div>
 

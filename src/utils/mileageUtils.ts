@@ -34,20 +34,42 @@ export const calculateMileageAmount = (
   powerCV: number,
   totalAnnualDistance: number
 ): number => {
+  console.log('Calculating mileage with:', { distance, powerCV, totalAnnualDistance });
+  
+  if (!distance || !powerCV || !totalAnnualDistance || distance <= 0 || totalAnnualDistance <= 0) {
+    console.log('Invalid inputs for mileage calculation');
+    return 0;
+  }
+
   const powerKey = powerCV <= 3 ? '3' : 
                    powerCV === 4 ? '4' : 
                    powerCV === 5 ? '5' : 
                    powerCV === 6 ? '6' : '7';
 
   const rates = MILEAGE_RATES[powerKey];
+  let result = 0;
 
-  if (totalAnnualDistance <= 5000) {
-    return distance * rates.upTo5000;
-  } else if (totalAnnualDistance <= 20000) {
-    const portion1 = Math.min(distance, 5000) * rates.upTo5000;
-    const portion2 = Math.max(0, distance - 5000) * rates.from5001To20000.rate;
-    return portion1 + portion2 + (rates.from5001To20000.fixed * (distance / totalAnnualDistance));
-  } else {
-    return distance * rates.above20000;
+  try {
+    if (totalAnnualDistance <= 5000) {
+      result = distance * rates.upTo5000;
+    } else if (totalAnnualDistance <= 20000) {
+      // Pour les distances entre 5001 et 20000 km
+      if (distance <= 5000) {
+        result = distance * rates.upTo5000;
+      } else {
+        const portion1 = 5000 * rates.upTo5000;
+        const portion2 = (distance - 5000) * rates.from5001To20000.rate;
+        result = portion1 + portion2;
+      }
+    } else {
+      // Pour les distances supérieures à 20000 km
+      result = distance * rates.above20000;
+    }
+    
+    console.log('Mileage calculation result:', result);
+    return Math.round(result * 100) / 100; // Arrondir à 2 décimales
+  } catch (error) {
+    console.error('Error in mileage calculation:', error);
+    return 0;
   }
 };

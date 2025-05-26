@@ -9,6 +9,7 @@ export interface Charge {
   categorie: string;
   typeCharge: 'mensuelle' | 'exceptionnelle';
   dateCreation: Date;
+  dateEcheance?: Date; // Nouvelle propriété pour la date d'échéance
   // Champs spécifiques aux frais kilométriques
   distanceKm?: number;
   puissanceCV?: number;

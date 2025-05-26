@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Charge } from '../types/charge';
 import { calculateSummary } from '../utils/chargeUtils';
@@ -6,6 +7,7 @@ import ChargeList from './ChargeList';
 import ChargeSummary from './ChargeSummary';
 import SessionManager from './SessionManager';
 import ChargeFilter from './ChargeFilter';
+import ChargeCalendar from './ChargeCalendar';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,6 +28,7 @@ const ChargeManager: React.FC = () => {
         const parsedCharges = JSON.parse(savedCharges).map((charge: any) => ({
           ...charge,
           dateCreation: new Date(charge.dateCreation),
+          dateEcheance: charge.dateEcheance ? new Date(charge.dateEcheance) : undefined,
           typeCharge: charge.typeCharge || 'exceptionnelle' // Migration pour les anciennes charges
         }));
         setCharges(parsedCharges);
@@ -134,6 +137,9 @@ const ChargeManager: React.FC = () => {
 
         {/* Résumé des charges */}
         <ChargeSummary summary={summary} charges={charges} />
+
+        {/* Calendrier des échéances */}
+        <ChargeCalendar charges={charges} />
 
         {/* Gestion de session */}
         <SessionManager charges={charges} onImportCharges={handleImportCharges} />
