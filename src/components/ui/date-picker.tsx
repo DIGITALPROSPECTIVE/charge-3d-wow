@@ -35,22 +35,22 @@ export function DatePicker({
           variant={"outline"}
           disabled={disabled}
           className={cn(
-            "glass-card border-white/20 text-white h-12 justify-start text-left font-normal",
+            "glass-card border-white/20 text-white h-14 justify-start text-left font-normal min-h-[56px] touch-manipulation",
             !date && "text-white/50",
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 h-5 w-5" />
           {date ? format(date, "PPP", { locale: fr }) : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-gray-900 border-gray-600" align="start">
+      <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-500 shadow-2xl backdrop-blur-sm" align="start">
         <Calendar
           mode="single"
           selected={date}
           onSelect={onDateChange}
           initialFocus
-          className="pointer-events-auto bg-gray-900 text-white"
+          className="pointer-events-auto bg-gray-800 text-white"
           disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
         />
       </PopoverContent>

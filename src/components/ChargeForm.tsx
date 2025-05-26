@@ -45,11 +45,11 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
 
   const isKilometricExpense = categorie === 'frais-kilometriques';
 
-  console.log('ChargeForm render - categorie:', categorie, 'isKilometricExpense:', isKilometricExpense);
+  console.log('📱 Mobile - ChargeForm render - categorie:', categorie, 'isKilometricExpense:', isKilometricExpense);
 
   useEffect(() => {
     if (editingCharge) {
-      console.log('Loading editing charge:', editingCharge);
+      console.log('📱 Mobile - Loading editing charge:', editingCharge);
       setDescription(editingCharge.description);
       setMontantHT(editingCharge.montantHT.toString());
       setTauxTVA(editingCharge.tauxTVA.toString());
@@ -70,7 +70,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     // Calcul automatique pour les frais kilométriques
     if (isKilometricExpense && distanceKm && puissanceCV && distanceTotaleAnnuelle) {
       try {
-        console.log('Calculating mileage with values:', { 
+        console.log('📱 Mobile - Calculating mileage with values:', { 
           distance: parseFloat(distanceKm), 
           power: parseInt(puissanceCV), 
           annual: parseFloat(distanceTotaleAnnuelle) 
@@ -85,10 +85,10 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
         if (calculatedAmount > 0) {
           ht = calculatedAmount;
           setMontantHT(calculatedAmount.toFixed(2));
-          console.log('Successfully calculated mileage amount:', calculatedAmount);
+          console.log('✅ Mobile - Successfully calculated mileage amount:', calculatedAmount);
         }
       } catch (error) {
-        console.error('Error calculating mileage:', error);
+        console.error('💥 Mobile - Error calculating mileage:', error);
       }
     }
     
@@ -99,7 +99,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   }, [montantHT, tauxTVA, distanceKm, puissanceCV, distanceTotaleAnnuelle, isKilometricExpense]);
 
   const validateForm = (): boolean => {
-    console.log('Validating form...');
+    console.log('📱 Mobile - Validating form...');
     const newErrors: FormErrors = {};
 
     if (!description.trim()) {
@@ -142,21 +142,21 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       newErrors.typeCharge = 'Le type de charge est obligatoire';
     }
 
-    console.log('Validation result:', { errors: newErrors, isValid: Object.keys(newErrors).length === 0 });
+    console.log('📱 Mobile - Validation result:', { errors: newErrors, isValid: Object.keys(newErrors).length === 0 });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
+    console.log('📱 Mobile - Form submitted');
     
     if (!validateForm()) {
-      console.log('Form validation failed');
+      console.log('📱 Mobile - Form validation failed');
       return;
     }
 
-    console.log('Creating charge object');
+    console.log('📱 Mobile - Creating charge object');
     const charge: Charge = {
       id: editingCharge ? editingCharge.id : generateId(),
       description: description.trim(),
@@ -175,12 +175,12 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       })
     };
 
-    console.log('Calling onAddCharge with:', charge);
+    console.log('📱 Mobile - Calling onAddCharge with:', charge);
     onAddCharge(charge);
     
     if (!editingCharge) {
       // Réinitialiser le formulaire uniquement lors d'un ajout
-      console.log('Resetting form');
+      console.log('📱 Mobile - Resetting form');
       setDescription('');
       setMontantHT('');
       setTauxTVA('20');
@@ -195,7 +195,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   };
 
   const handleCancel = () => {
-    console.log('Form cancelled');
+    console.log('📱 Mobile - Form cancelled');
     setDescription('');
     setMontantHT('');
     setTauxTVA('20');
@@ -210,7 +210,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   };
 
   const handleCategorieChange = (value: string) => {
-    console.log('Category changed to:', value);
+    console.log('📱 Mobile - Category changed to:', value);
     setCategorie(value);
     if (value !== 'frais-kilometriques') {
       setDistanceKm('');
@@ -250,7 +250,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   }
                 }}
                 placeholder="Ex: Facture électricité"
-                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
+                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-14 text-base min-h-[56px] touch-manipulation ${
                   errors.description ? 'border-red-500' : ''
                 }`}
               />
@@ -262,7 +262,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               )}
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-3">
                 <Label htmlFor="typeCharge" className="text-white/80 flex items-center gap-2 text-base">
                   <Clock className="w-4 h-4" />
@@ -277,7 +277,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     }
                   }}
                 >
-                  <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
+                  <SelectTrigger className={`glass-card border-white/20 text-white h-14 min-h-[56px] touch-manipulation ${
                     errors.typeCharge ? 'border-red-500' : ''
                   }`}>
                     <SelectValue placeholder="Sélectionner le type" />
@@ -301,7 +301,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   value={categorie} 
                   onValueChange={handleCategorieChange}
                 >
-                  <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
+                  <SelectTrigger className={`glass-card border-white/20 text-white h-14 min-h-[56px] touch-manipulation ${
                     errors.categorie ? 'border-red-500' : ''
                   }`}>
                     <SelectValue placeholder="Sélectionner une catégorie" />
@@ -364,7 +364,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     placeholder="Ex: 100"
                     step="0.1"
                     min="0"
-                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
+                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-14 text-base min-h-[56px] touch-manipulation ${
                       errors.distanceKm ? 'border-red-500' : ''
                     }`}
                   />
@@ -381,14 +381,14 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   <Select 
                     value={puissanceCV} 
                     onValueChange={(value) => {
-                      console.log('Puissance CV changed to:', value);
+                      console.log('📱 Mobile - Puissance CV changed to:', value);
                       setPuissanceCV(value);
                       if (errors.puissanceCV) {
                         setErrors({ ...errors, puissanceCV: undefined });
                       }
                     }}
                   >
-                    <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
+                    <SelectTrigger className={`glass-card border-white/20 text-white h-14 min-h-[56px] touch-manipulation ${
                       errors.puissanceCV ? 'border-red-500' : ''
                     }`}>
                       <SelectValue placeholder="Sélectionner" />
@@ -424,7 +424,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     placeholder="Ex: 15000"
                     step="1"
                     min="1"
-                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
+                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-14 text-base min-h-[56px] touch-manipulation ${
                       errors.distanceTotaleAnnuelle ? 'border-red-500' : ''
                     }`}
                   />
@@ -439,7 +439,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {!isKilometricExpense && (
               <div className="space-y-3">
                 <Label htmlFor="montantHT" className="text-white/80 text-base">Montant HT (€) *</Label>
@@ -457,7 +457,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   step="0.01"
                   min="0"
                   max="999999"
-                  className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
+                  className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-14 text-base min-h-[56px] touch-manipulation ${
                     errors.montantHT ? 'border-red-500' : ''
                   }`}
                 />
@@ -473,7 +473,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             <div className="space-y-3">
               <Label htmlFor="tauxTVA" className="text-white/80 text-base">Taux TVA (%)</Label>
               <Select value={tauxTVA} onValueChange={setTauxTVA}>
-                <SelectTrigger className="glass-card border-white/20 text-white h-12">
+                <SelectTrigger className="glass-card border-white/20 text-white h-14 min-h-[56px] touch-manipulation">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -490,7 +490,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 <Calculator className="w-4 h-4" />
                 Montant TTC (€)
               </Label>
-              <div className="glass-card border-white/20 p-4 rounded-md min-h-[48px] flex flex-col justify-center">
+              <div className="glass-card border-white/20 p-4 rounded-md min-h-[56px] flex flex-col justify-center">
                 <span className="text-white font-semibold text-lg">
                   {montantTTC.toFixed(2)} €
                 </span>
@@ -506,10 +506,10 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-4">
             <Button 
               type="submit" 
-              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 h-12 text-base"
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 h-14 text-base min-h-[56px] touch-manipulation"
             >
               {editingCharge ? <Edit className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               {editingCharge ? 'Modifier' : 'Ajouter'}
@@ -520,7 +520,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 type="button" 
                 variant="outline" 
                 onClick={handleCancel}
-                className="border-white/20 text-white hover:bg-white/10 h-12 text-base sm:w-auto w-full"
+                className="border-white/20 text-white hover:bg-white/10 h-14 text-base w-full min-h-[56px] touch-manipulation"
               >
                 Annuler
               </Button>

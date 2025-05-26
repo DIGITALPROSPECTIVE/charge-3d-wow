@@ -34,10 +34,10 @@ export const calculateMileageAmount = (
   powerCV: number,
   totalAnnualDistance: number
 ): number => {
-  console.log('Calculating mileage with:', { distance, powerCV, totalAnnualDistance });
+  console.log('🚗 Mobile - Calculating mileage with:', { distance, powerCV, totalAnnualDistance });
   
   if (!distance || !powerCV || !totalAnnualDistance || distance <= 0 || totalAnnualDistance <= 0) {
-    console.log('Invalid inputs for mileage calculation');
+    console.log('❌ Mobile - Invalid inputs for mileage calculation');
     return 0;
   }
 
@@ -52,24 +52,27 @@ export const calculateMileageAmount = (
   try {
     if (totalAnnualDistance <= 5000) {
       result = distance * rates.upTo5000;
+      console.log('📊 Mobile - Using up to 5000km rate:', rates.upTo5000);
     } else if (totalAnnualDistance <= 20000) {
-      // Pour les distances entre 5001 et 20000 km
       if (distance <= 5000) {
         result = distance * rates.upTo5000;
+        console.log('📊 Mobile - Distance ≤ 5000, using rate:', rates.upTo5000);
       } else {
         const portion1 = 5000 * rates.upTo5000;
         const portion2 = (distance - 5000) * rates.from5001To20000.rate;
         result = portion1 + portion2;
+        console.log('📊 Mobile - Mixed calculation:', { portion1, portion2, result });
       }
     } else {
-      // Pour les distances supérieures à 20000 km
       result = distance * rates.above20000;
+      console.log('📊 Mobile - Using above 20000km rate:', rates.above20000);
     }
     
-    console.log('Mileage calculation result:', result);
-    return Math.round(result * 100) / 100; // Arrondir à 2 décimales
+    const finalResult = Math.round(result * 100) / 100;
+    console.log('✅ Mobile - Final mileage calculation result:', finalResult);
+    return finalResult;
   } catch (error) {
-    console.error('Error in mileage calculation:', error);
+    console.error('💥 Mobile - Error in mileage calculation:', error);
     return 0;
   }
 };
