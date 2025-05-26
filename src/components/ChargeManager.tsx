@@ -119,15 +119,15 @@ const ChargeManager: React.FC = () => {
   const summary = calculateSummary(charges);
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">
         {/* En-tête avec titre */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-slide-up">
+        <div className="text-center mb-8 lg:mb-12">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-4 animate-slide-up">
             Gestionnaire de 
-            <span className="text-gradient block md:inline"> Charges</span>
+            <span className="text-gradient block sm:inline"> Charges</span>
           </h1>
-          <p className="text-white/80 text-lg md:text-xl animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <p className="text-white/80 text-base sm:text-lg lg:text-xl animate-slide-up px-4" style={{ animationDelay: '0.2s' }}>
             Gérez vos charges avec calcul automatique TTC et export PDF
           </p>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -181,16 +180,16 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   return (
     <Card className="glass-card card-3d shadow-3d border-0 animate-slide-up">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
+        <CardTitle className="flex items-center gap-2 text-white text-lg sm:text-xl">
           {editingCharge ? <Edit className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
           {editingCharge ? 'Modifier la charge' : 'Ajouter une nouvelle charge'}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-white/80">Description *</Label>
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-3">
+              <Label htmlFor="description" className="text-white/80 text-base">Description *</Label>
               <Input
                 id="description"
                 value={description}
@@ -201,7 +200,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   }
                 }}
                 placeholder="Ex: Facture électricité"
-                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
                   errors.description ? 'border-red-500' : ''
                 }`}
               />
@@ -213,8 +212,8 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               )}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="typeCharge" className="text-white/80 flex items-center gap-2">
+            <div className="space-y-3">
+              <Label htmlFor="typeCharge" className="text-white/80 flex items-center gap-2 text-base">
                 <Clock className="w-4 h-4" />
                 Type de charge *
               </Label>
@@ -232,7 +231,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 }`}>
                   <SelectValue placeholder="Sélectionner le type" />
                 </SelectTrigger>
-                <SelectContent className="glass-card border-white/20">
+                <SelectContent>
                   <SelectItem value="exceptionnelle">Exceptionnelle</SelectItem>
                   <SelectItem value="mensuelle">Mensuelle</SelectItem>
                 </SelectContent>
@@ -244,60 +243,60 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="categorie" className="text-white/80">Catégorie *</Label>
-            <Select 
-              value={categorie} 
-              onValueChange={(value) => {
-                setCategorie(value);
-                if (value !== 'frais-kilometriques') {
-                  setDistanceKm('');
-                  setPuissanceCV('');
-                  setDistanceTotaleAnnuelle('');
-                }
-                if (errors.categorie) {
-                  setErrors({ ...errors, categorie: undefined });
-                }
-              }}
-            >
-              <SelectTrigger className={`glass-card border-white/20 text-white ${
-                errors.categorie ? 'border-red-500' : ''
-              }`}>
-                <SelectValue placeholder="Sélectionner une catégorie" />
-              </SelectTrigger>
-              <SelectContent className="glass-card border-white/20">
-                <SelectItem value="energie">Énergie</SelectItem>
-                <SelectItem value="transport">Transport</SelectItem>
-                <SelectItem value="fournitures">Fournitures</SelectItem>
-                <SelectItem value="services">Services</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="frais-de-bouche">Frais de bouche</SelectItem>
-                <SelectItem value="hotel">Hôtel</SelectItem>
-                <SelectItem value="airbnb">Airbnb</SelectItem>
-                <SelectItem value="frais-kilometriques">Frais kilométriques</SelectItem>
-                <SelectItem value="autre">Autre</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.categorie && (
-              <div className="flex items-center gap-1 text-red-400 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                {errors.categorie}
-              </div>
-            )}
+            <div className="space-y-3">
+              <Label htmlFor="categorie" className="text-white/80 text-base">Catégorie *</Label>
+              <Select 
+                value={categorie} 
+                onValueChange={(value) => {
+                  setCategorie(value);
+                  if (value !== 'frais-kilometriques') {
+                    setDistanceKm('');
+                    setPuissanceCV('');
+                    setDistanceTotaleAnnuelle('');
+                  }
+                  if (errors.categorie) {
+                    setErrors({ ...errors, categorie: undefined });
+                  }
+                }}
+              >
+                <SelectTrigger className={`glass-card border-white/20 text-white ${
+                  errors.categorie ? 'border-red-500' : ''
+                }`}>
+                  <SelectValue placeholder="Sélectionner une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="energie">Énergie</SelectItem>
+                  <SelectItem value="transport">Transport</SelectItem>
+                  <SelectItem value="fournitures">Fournitures</SelectItem>
+                  <SelectItem value="services">Services</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="frais-de-bouche">Frais de bouche</SelectItem>
+                  <SelectItem value="hotel">Hôtel</SelectItem>
+                  <SelectItem value="airbnb">Airbnb</SelectItem>
+                  <SelectItem value="frais-kilometriques">Frais kilométriques</SelectItem>
+                  <SelectItem value="autre">Autre</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.categorie && (
+                <div className="flex items-center gap-1 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.categorie}
+                </div>
+              )}
+            </div>
           </div>
 
           {isKilometricExpense && (
             <div className="space-y-4 p-4 glass-card border border-white/20 rounded-lg">
               <div className="flex items-center gap-2 text-white/80 mb-4">
                 <Car className="w-5 h-5" />
-                <span className="font-semibold">Calcul automatique des frais kilométriques</span>
+                <span className="font-semibold text-base">Calcul automatique des frais kilométriques</span>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="distanceKm" className="text-white/80">Distance (km) *</Label>
+              <div className="grid grid-cols-1 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="distanceKm" className="text-white/80 text-base">Distance (km) *</Label>
                   <Input
                     id="distanceKm"
                     type="number"
@@ -311,7 +310,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     placeholder="Ex: 100"
                     step="0.1"
                     min="0"
-                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
                       errors.distanceKm ? 'border-red-500' : ''
                     }`}
                   />
@@ -323,8 +322,8 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="puissanceCV" className="text-white/80">Puissance (CV) *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="puissanceCV" className="text-white/80 text-base">Puissance (CV) *</Label>
                   <Select 
                     value={puissanceCV} 
                     onValueChange={(value) => {
@@ -339,7 +338,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     }`}>
                       <SelectValue placeholder="Sélectionner" />
                     </SelectTrigger>
-                    <SelectContent className="glass-card border-white/20">
+                    <SelectContent>
                       <SelectItem value="3">3 CV et moins</SelectItem>
                       <SelectItem value="4">4 CV</SelectItem>
                       <SelectItem value="5">5 CV</SelectItem>
@@ -355,8 +354,8 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="distanceTotaleAnnuelle" className="text-white/80">Distance annuelle totale (km) *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="distanceTotaleAnnuelle" className="text-white/80 text-base">Distance annuelle totale (km) *</Label>
                   <Input
                     id="distanceTotaleAnnuelle"
                     type="number"
@@ -370,7 +369,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                     placeholder="Ex: 15000"
                     step="1"
                     min="1"
-                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                    className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
                       errors.distanceTotaleAnnuelle ? 'border-red-500' : ''
                     }`}
                   />
@@ -385,10 +384,10 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {!isKilometricExpense && (
-              <div className="space-y-2">
-                <Label htmlFor="montantHT" className="text-white/80">Montant HT (€) *</Label>
+              <div className="space-y-3">
+                <Label htmlFor="montantHT" className="text-white/80 text-base">Montant HT (€) *</Label>
                 <Input
                   id="montantHT"
                   type="number"
@@ -403,7 +402,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   step="0.01"
                   min="0"
                   max="999999"
-                  className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 ${
+                  className={`glass-card border-white/20 text-white placeholder:text-white/50 focus:border-purple-400 h-12 text-base ${
                     errors.montantHT ? 'border-red-500' : ''
                   }`}
                 />
@@ -416,13 +415,13 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               </div>
             )}
             
-            <div className="space-y-2">
-              <Label htmlFor="tauxTVA" className="text-white/80">Taux TVA (%)</Label>
+            <div className="space-y-3">
+              <Label htmlFor="tauxTVA" className="text-white/80 text-base">Taux TVA (%)</Label>
               <Select value={tauxTVA} onValueChange={setTauxTVA}>
                 <SelectTrigger className="glass-card border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="glass-card border-white/20">
+                <SelectContent>
                   <SelectItem value="0">0%</SelectItem>
                   <SelectItem value="5.5">5.5%</SelectItem>
                   <SelectItem value="10">10%</SelectItem>
@@ -431,20 +430,20 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               </Select>
             </div>
             
-            <div className="space-y-2">
-              <Label className="text-white/80 flex items-center gap-2">
+            <div className="space-y-3">
+              <Label className="text-white/80 flex items-center gap-2 text-base">
                 <Calculator className="w-4 h-4" />
                 Montant TTC (€)
               </Label>
-              <div className="glass-card border-white/20 p-3 rounded-md">
+              <div className="glass-card border-white/20 p-4 rounded-md min-h-[48px] flex flex-col justify-center">
                 <span className="text-white font-semibold text-lg">
                   {montantTTC.toFixed(2)} €
                 </span>
-                <div className="text-white/60 text-xs mt-1">
+                <div className="text-white/60 text-sm mt-1">
                   TVA: {montantTVA.toFixed(2)} €
                 </div>
                 {isKilometricExpense && montantHT && (
-                  <div className="text-white/60 text-xs mt-1">
+                  <div className="text-white/60 text-sm mt-1">
                     HT: {parseFloat(montantHT).toFixed(2)} €
                   </div>
                 )}
@@ -452,10 +451,10 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button 
               type="submit" 
-              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 h-12 text-base"
             >
               {editingCharge ? <Edit className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               {editingCharge ? 'Modifier' : 'Ajouter'}
@@ -466,18 +465,18 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                 type="button" 
                 variant="outline" 
                 onClick={handleCancel}
-                className="border-white/20 text-white hover:bg-white/10"
+                className="border-white/20 text-white hover:bg-white/10 h-12 text-base sm:w-auto w-full"
               >
                 Annuler
               </Button>
             )}
           </div>
 
-          <div className="text-xs text-white/60 mt-4">
-            * Champs obligatoires
+          <div className="text-sm text-white/60 mt-4 space-y-2">
+            <div>* Champs obligatoires</div>
             {isKilometricExpense && (
-              <div className="mt-2 text-yellow-300">
-                <Zap className="w-4 h-4 inline mr-1" />
+              <div className="text-yellow-300 flex items-center gap-2">
+                <Zap className="w-4 h-4" />
                 Le montant HT est calculé automatiquement selon le barème fiscal
               </div>
             )}
