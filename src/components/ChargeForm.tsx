@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,8 +43,14 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
 
   const isKilometricExpense = categorie === 'frais-kilometriques';
 
+  // Debug logs pour mobile
+  console.log('ChargeForm render - categorie:', categorie);
+  console.log('ChargeForm render - typeCharge:', typeCharge);
+  console.log('ChargeForm render - errors:', errors);
+
   useEffect(() => {
     if (editingCharge) {
+      console.log('Editing charge:', editingCharge);
       setDescription(editingCharge.description);
       setMontantHT(editingCharge.montantHT.toString());
       setTauxTVA(editingCharge.tauxTVA.toString());
@@ -62,6 +69,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     
     // Calcul automatique pour les frais kilométriques
     if (isKilometricExpense && distanceKm && puissanceCV && distanceTotaleAnnuelle) {
+      console.log('Calculating mileage:', { distanceKm, puissanceCV, distanceTotaleAnnuelle });
       const calculatedAmount = calculateMileageAmount(
         parseFloat(distanceKm),
         parseInt(puissanceCV),
@@ -69,6 +77,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       );
       ht = calculatedAmount;
       setMontantHT(calculatedAmount.toFixed(2));
+      console.log('Calculated mileage amount:', calculatedAmount);
     }
     
     const tva = parseFloat(tauxTVA) || 0;
@@ -78,6 +87,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   }, [montantHT, tauxTVA, distanceKm, puissanceCV, distanceTotaleAnnuelle, isKilometricExpense]);
 
   const validateForm = (): boolean => {
+    console.log('Validating form...');
     const newErrors: FormErrors = {};
 
     if (!description.trim()) {
@@ -120,17 +130,21 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       newErrors.typeCharge = 'Le type de charge est obligatoire';
     }
 
+    console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
     
     if (!validateForm()) {
+      console.log('Form validation failed');
       return;
     }
 
+    console.log('Creating charge object');
     const charge: Charge = {
       id: editingCharge ? editingCharge.id : generateId(),
       description: description.trim(),
@@ -148,10 +162,12 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
       })
     };
 
+    console.log('Calling onAddCharge with:', charge);
     onAddCharge(charge);
     
     if (!editingCharge) {
       // Réinitialiser le formulaire uniquement lors d'un ajout
+      console.log('Resetting form');
       setDescription('');
       setMontantHT('');
       setTauxTVA('20');
@@ -165,6 +181,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
   };
 
   const handleCancel = () => {
+    console.log('Form cancelled');
     setDescription('');
     setMontantHT('');
     setTauxTVA('20');
@@ -175,6 +192,27 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
     setDistanceTotaleAnnuelle('');
     setErrors({});
     onCancelEdit();
+  };
+
+  const handleCategorieChange = (value: string) => {
+    console.log('Category changed to:', value);
+    setCategorie(value);
+    if (value !== 'frais-kilometriques') {
+      setDistanceKm('');
+      setPuissanceCV('');
+      setDistanceTotaleAnnuelle('');
+    }
+    if (errors.categorie) {
+      setErrors({ ...errors, categorie: undefined });
+    }
+  };
+
+  const handleTypeChargeChange = (value: 'mensuelle' | 'exceptionnelle') => {
+    console.log('Type charge changed to:', value);
+    setTypeCharge(value);
+    if (errors.typeCharge) {
+      setErrors({ ...errors, typeCharge: undefined });
+    }
   };
 
   return (
@@ -219,14 +257,9 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               </Label>
               <Select 
                 value={typeCharge} 
-                onValueChange={(value: 'mensuelle' | 'exceptionnelle') => {
-                  setTypeCharge(value);
-                  if (errors.typeCharge) {
-                    setErrors({ ...errors, typeCharge: undefined });
-                  }
-                }}
+                onValueChange={handleTypeChargeChange}
               >
-                <SelectTrigger className={`glass-card border-white/20 text-white ${
+                <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
                   errors.typeCharge ? 'border-red-500' : ''
                 }`}>
                   <SelectValue placeholder="Sélectionner le type" />
@@ -248,19 +281,9 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
               <Label htmlFor="categorie" className="text-white/80 text-base">Catégorie *</Label>
               <Select 
                 value={categorie} 
-                onValueChange={(value) => {
-                  setCategorie(value);
-                  if (value !== 'frais-kilometriques') {
-                    setDistanceKm('');
-                    setPuissanceCV('');
-                    setDistanceTotaleAnnuelle('');
-                  }
-                  if (errors.categorie) {
-                    setErrors({ ...errors, categorie: undefined });
-                  }
-                }}
+                onValueChange={handleCategorieChange}
               >
-                <SelectTrigger className={`glass-card border-white/20 text-white ${
+                <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
                   errors.categorie ? 'border-red-500' : ''
                 }`}>
                   <SelectValue placeholder="Sélectionner une catégorie" />
@@ -327,13 +350,14 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
                   <Select 
                     value={puissanceCV} 
                     onValueChange={(value) => {
+                      console.log('Puissance CV changed to:', value);
                       setPuissanceCV(value);
                       if (errors.puissanceCV) {
                         setErrors({ ...errors, puissanceCV: undefined });
                       }
                     }}
                   >
-                    <SelectTrigger className={`glass-card border-white/20 text-white ${
+                    <SelectTrigger className={`glass-card border-white/20 text-white h-12 ${
                       errors.puissanceCV ? 'border-red-500' : ''
                     }`}>
                       <SelectValue placeholder="Sélectionner" />
@@ -418,7 +442,7 @@ const ChargeForm: React.FC<ChargeFormProps> = ({ onAddCharge, editingCharge, onC
             <div className="space-y-3">
               <Label htmlFor="tauxTVA" className="text-white/80 text-base">Taux TVA (%)</Label>
               <Select value={tauxTVA} onValueChange={setTauxTVA}>
-                <SelectTrigger className="glass-card border-white/20 text-white">
+                <SelectTrigger className="glass-card border-white/20 text-white h-12">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

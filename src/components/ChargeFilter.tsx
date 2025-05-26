@@ -54,7 +54,7 @@ const ChargeFilter: React.FC<ChargeFilterProps> = ({
           <div className="space-y-3">
             <label className="text-white/80 text-base">Catégorie</label>
             <Select value={selectedCategory} onValueChange={onCategoryChange}>
-              <SelectTrigger className="glass-card border-white/20 text-white">
+              <SelectTrigger className="glass-card border-white/20 text-white h-12">
                 <SelectValue placeholder="Toutes les catégories" />
               </SelectTrigger>
               <SelectContent>
