@@ -10,6 +10,7 @@ import ChargeFilter from './ChargeFilter';
 import ChargeCalendar from './ChargeCalendar';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
+import { GooeyText } from '@/components/ui/gooey-text-morphing';
 
 const ChargeManager: React.FC = () => {
   const [charges, setCharges] = useState<Charge[]>([]);
@@ -126,9 +127,15 @@ const ChargeManager: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">
         {/* En-tête avec titre */}
         <div className="text-center mb-8 lg:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-4 animate-slide-up">
-            Application test
-          </h1>
+          <div className="h-24 flex items-center justify-center animate-slide-up">
+            <GooeyText
+              texts={["Application test", "Gestionnaire", "Charges TTC", "Export PDF"]}
+              morphTime={1.5}
+              cooldownTime={2}
+              className="h-24 w-full"
+              textClassName="font-bold text-white text-5xl lg:text-6xl"
+            />
+          </div>
           <p className="text-white/80 text-base sm:text-lg lg:text-xl animate-slide-up px-4" style={{ animationDelay: '0.2s' }}>
             Gérez vos charges avec calcul automatique TTC et export PDF
           </p>
