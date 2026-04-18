@@ -11,6 +11,22 @@ import ChargeCalendar from './ChargeCalendar';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
 import { GooeyText } from '@/components/ui/gooey-text-morphing';
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+import ChargeCharts from './ChargeCharts';
+import { generateId, calculateTTC } from '../utils/chargeUtils';
+
+const DEMO_CHARGES: Charge[] = [
+  { id: generateId(), description: 'Loyer bureau', montantHT: 1200, tauxTVA: 20, ...calculateTTC(1200, 20), categorie: 'Immobilier', typeCharge: 'mensuelle', dateCreation: new Date('2026-01-05') },
+  { id: generateId(), description: 'Abonnement internet', montantHT: 35, tauxTVA: 20, ...calculateTTC(35, 20), categorie: 'Télécom', typeCharge: 'mensuelle', dateCreation: new Date('2026-01-10') },
+  { id: generateId(), description: 'Logiciels SaaS', montantHT: 250, tauxTVA: 20, ...calculateTTC(250, 20), categorie: 'Informatique', typeCharge: 'mensuelle', dateCreation: new Date('2026-01-15') },
+  { id: generateId(), description: 'Électricité', montantHT: 180, tauxTVA: 5.5, ...calculateTTC(180, 5.5), categorie: 'Énergie', typeCharge: 'mensuelle', dateCreation: new Date('2026-02-01') },
+  { id: generateId(), description: 'Fournitures bureau', montantHT: 90, tauxTVA: 20, ...calculateTTC(90, 20), categorie: 'Fournitures', typeCharge: 'exceptionnelle', dateCreation: new Date('2026-02-10') },
+  { id: generateId(), description: 'Assurance pro', montantHT: 320, tauxTVA: 0, ...calculateTTC(320, 0), categorie: 'Assurance', typeCharge: 'mensuelle', dateCreation: new Date('2026-02-20') },
+  { id: generateId(), description: 'Formation React', montantHT: 600, tauxTVA: 20, ...calculateTTC(600, 20), categorie: 'Formation', typeCharge: 'exceptionnelle', dateCreation: new Date('2026-03-05') },
+  { id: generateId(), description: 'Téléphonie mobile', montantHT: 45, tauxTVA: 20, ...calculateTTC(45, 20), categorie: 'Télécom', typeCharge: 'mensuelle', dateCreation: new Date('2026-03-10') },
+  { id: generateId(), description: 'Maintenance serveur', montantHT: 150, tauxTVA: 20, ...calculateTTC(150, 20), categorie: 'Informatique', typeCharge: 'mensuelle', dateCreation: new Date('2026-03-20') },
+  { id: generateId(), description: 'Déplacement client', montantHT: 210, tauxTVA: 20, ...calculateTTC(210, 20), categorie: 'Transport', typeCharge: 'exceptionnelle', dateCreation: new Date('2026-04-02') },
+];
 
 const ChargeManager: React.FC = () => {
   const [charges, setCharges] = useState<Charge[]>([]);
@@ -30,17 +46,15 @@ const ChargeManager: React.FC = () => {
           ...charge,
           dateCreation: new Date(charge.dateCreation),
           dateEcheance: charge.dateEcheance ? new Date(charge.dateEcheance) : undefined,
-          typeCharge: charge.typeCharge || 'exceptionnelle' // Migration pour les anciennes charges
+          typeCharge: charge.typeCharge || 'exceptionnelle'
         }));
-        setCharges(parsedCharges);
+        setCharges(parsedCharges.length > 0 ? parsedCharges : DEMO_CHARGES);
       } catch (error) {
         console.error('Erreur lors du chargement des charges:', error);
-        toast({
-          title: "Erreur de chargement",
-          description: "Impossible de charger les charges sauvegardées.",
-          variant: "destructive"
-        });
+        setCharges(DEMO_CHARGES);
       }
+    } else {
+      setCharges(DEMO_CHARGES);
     }
   }, [toast]);
 
@@ -123,7 +137,11 @@ const ChargeManager: React.FC = () => {
   const summary = calculateSummary(charges);
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <>
+    <div className="fixed inset-0 -z-10">
+      <BackgroundGradientAnimation containerClassName="h-full w-full" />
+    </div>
+    <div className="relative z-10 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">
         {/* En-tête avec titre */}
         <div className="text-center mb-8 lg:mb-12">
@@ -143,6 +161,9 @@ const ChargeManager: React.FC = () => {
 
         {/* Résumé des charges */}
         <ChargeSummary summary={summary} charges={charges} />
+
+        {/* Graphiques */}
+        <ChargeCharts charges={charges} />
 
         {/* Calendrier des échéances */}
         <ChargeCalendar charges={charges} />
@@ -183,6 +204,7 @@ const ChargeManager: React.FC = () => {
         />
       </div>
     </div>
+    </>
   );
 };
 

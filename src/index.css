@@ -89,6 +89,13 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  .theme {
+    --animate-first: moveVertical 30s ease infinite;
+    --animate-second: moveInCircle 20s reverse infinite;
+    --animate-third: moveInCircle 40s linear infinite;
+    --animate-fourth: moveHorizontal 40s ease infinite;
+    --animate-fifth: moveInCircle 20s ease infinite;
+  }
 }
 
 @layer base {
@@ -109,31 +116,67 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-  
+
   .card-3d {
     transform-style: preserve-3d;
     transition: transform 0.3s ease;
   }
-  
+
   .card-3d:hover {
     transform: rotateX(5deg) rotateY(5deg) translateZ(10px);
   }
-  
+
   .text-gradient {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .shadow-3d {
     box-shadow: 
       0 4px 8px rgba(0, 0, 0, 0.1),
       0 8px 16px rgba(0, 0, 0, 0.1),
       0 16px 32px rgba(0, 0, 0, 0.1);
   }
-  
+
   .perspective-1000 {
     perspective: 1000px;
+  }
+}
+
+@theme inline {
+  @keyframes moveHorizontal {
+  0% {
+    transform: translateX(-50%) translateY(-10%);
+    }
+  50% {
+    transform: translateX(50%) translateY(10%);
+    }
+  100% {
+    transform: translateX(-50%) translateY(-10%);
+    }
+  }
+  @keyframes moveInCircle {
+  0% {
+    transform: rotate(0deg);
+    }
+  50% {
+    transform: rotate(180deg);
+    }
+  100% {
+    transform: rotate(360deg);
+    }
+  }
+  @keyframes moveVertical {
+  0% {
+    transform: translateY(-50%);
+    }
+  50% {
+    transform: translateY(50%);
+    }
+  100% {
+    transform: translateY(-50%);
+    }
   }
 }
