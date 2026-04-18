@@ -127,8 +127,7 @@ const ChargeManager: React.FC = () => {
         {/* En-tête avec titre */}
         <div className="text-center mb-8 lg:mb-12">
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-4 animate-slide-up">
-            Gestionnaire de 
-            <span className="text-gradient block sm:inline"> Charges</span>
+            Application test
           </h1>
           <p className="text-white/80 text-base sm:text-lg lg:text-xl animate-slide-up px-4" style={{ animationDelay: '0.2s' }}>
             Gérez vos charges avec calcul automatique TTC et export PDF
