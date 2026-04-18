@@ -22,7 +22,7 @@ const ChargeSummaryComponent: React.FC<ChargeSummaryProps> = ({ summary, charges
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-      <Card className="glass-card card-3d shadow-3d border-0 animate-float">
+      <Card className="glass-card card-3d shadow-3d border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-white/80">
             Nombre de charges
@@ -37,7 +37,7 @@ const ChargeSummaryComponent: React.FC<ChargeSummaryProps> = ({ summary, charges
         </CardContent>
       </Card>
 
-      <Card className="glass-card card-3d shadow-3d border-0 animate-float" style={{ animationDelay: '0.1s' }}>
+      <Card className="glass-card card-3d shadow-3d border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-white/80">
             Total HT
@@ -52,7 +52,7 @@ const ChargeSummaryComponent: React.FC<ChargeSummaryProps> = ({ summary, charges
         </CardContent>
       </Card>
 
-      <Card className="glass-card card-3d shadow-3d border-0 animate-float" style={{ animationDelay: '0.2s' }}>
+      <Card className="glass-card card-3d shadow-3d border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-white/80">
             Total TVA
@@ -67,7 +67,7 @@ const ChargeSummaryComponent: React.FC<ChargeSummaryProps> = ({ summary, charges
         </CardContent>
       </Card>
 
-      <Card className="glass-card card-3d shadow-3d border-0 animate-float animate-glow" style={{ animationDelay: '0.3s' }}>
+      <Card className="glass-card card-3d shadow-3d border-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-white/80">
             Total TTC
