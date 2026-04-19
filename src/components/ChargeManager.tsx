@@ -718,7 +718,7 @@ const ChargeManager: React.FC = () => {
             <nav className="cm-breadcrumb">
               <span>ChargeApp</span>
               <span className="cm-breadcrumb-sep">/</span>
-              <span className="cm-breadcrumb-active">Dashboard</span>
+              <span className="cm-breadcrumb-active">{PAGE_META[activeNav]?.title || 'Dashboard'}</span>
             </nav>
           </div>
 
