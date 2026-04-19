@@ -834,11 +834,14 @@ const ChargeManager: React.FC = () => {
 
             {/* Page header */}
             <div className="cm-page-header">
-              <h1 className="cm-page-title">Vue d'ensemble</h1>
+              <h1 className="cm-page-title">{PAGE_META[activeNav]?.title || 'Dashboard'}</h1>
               <p className="cm-page-subtitle">
-                Suivi de vos charges professionnelles &mdash; {charges.length} entrées au total
+                {PAGE_META[activeNav]?.subtitle} &mdash; {charges.length} entrées au total
               </p>
             </div>
+
+            {activeNav === 'dashboard' && (<></>)}
+            {activeNav === 'dashboard' && (<>
 
             {/* ── KPI ROW ────────────────────────────────────── */}
             <div className="cm-kpi-grid">
