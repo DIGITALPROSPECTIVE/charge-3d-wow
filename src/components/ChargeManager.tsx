@@ -27,6 +27,16 @@ const DEMO_CHARGES: Charge[] = [
   { id: generateId(), description: 'Déplacement client', montantHT: 210, tauxTVA: 20, ...calculateTTC(210, 20), categorie: 'Transport', typeCharge: 'exceptionnelle', dateCreation: new Date('2026-04-02') },
 ];
 
+const PAGE_META: Record<string, { title: string; subtitle: string }> = {
+  dashboard:  { title: 'Dashboard',  subtitle: "Vue d'ensemble de vos charges professionnelles" },
+  analytics:  { title: 'Analytics',  subtitle: 'Graphiques détaillés et tendances de vos dépenses' },
+  charges:    { title: 'Charges',    subtitle: 'Liste complète, recherche et édition de vos charges' },
+  calendrier: { title: 'Calendrier', subtitle: 'Échéances à venir et dates de prélèvement' },
+  sessions:   { title: 'Sessions',   subtitle: 'Sauvegarde, import et export de vos données' },
+  pdf:        { title: 'PDF Export', subtitle: 'Générez un rapport PDF professionnel' },
+  rapports:   { title: 'Rapports',   subtitle: 'Synthèses par catégorie et par type de charge' },
+};
+
 const ChargeManager: React.FC = () => {
   const [charges, setCharges] = useState<Charge[]>([]);
   const [editingCharge, setEditingCharge] = useState<Charge | null>(null);
@@ -718,7 +728,7 @@ const ChargeManager: React.FC = () => {
             <nav className="cm-breadcrumb">
               <span>ChargeApp</span>
               <span className="cm-breadcrumb-sep">/</span>
-              <span className="cm-breadcrumb-active">Dashboard</span>
+              <span className="cm-breadcrumb-active">{PAGE_META[activeNav]?.title || 'Dashboard'}</span>
             </nav>
           </div>
 
@@ -824,11 +834,14 @@ const ChargeManager: React.FC = () => {
 
             {/* Page header */}
             <div className="cm-page-header">
-              <h1 className="cm-page-title">Vue d'ensemble</h1>
+              <h1 className="cm-page-title">{PAGE_META[activeNav]?.title || 'Dashboard'}</h1>
               <p className="cm-page-subtitle">
-                Suivi de vos charges professionnelles &mdash; {charges.length} entrées au total
+                {PAGE_META[activeNav]?.subtitle} &mdash; {charges.length} entrées au total
               </p>
             </div>
+
+            {activeNav === 'dashboard' && (<></>)}
+            {activeNav === 'dashboard' && (<>
 
             {/* ── KPI ROW ────────────────────────────────────── */}
             <div className="cm-kpi-grid">
@@ -1012,8 +1025,144 @@ const ChargeManager: React.FC = () => {
                 </div>
               </div>
             </div>
+            </>)}
+
+            {activeNav === 'analytics' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📈</span>
+                    <span className="cm-card-title">Analyse complète</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeCharts charges={charges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'charges' && (
+              <>
+                <div className="cm-card" id="cm-form-section">
+                  <div className="cm-card-header">
+                    <div className="cm-card-title-group">
+                      <span className="cm-card-icon">{editingCharge ? '✏️' : '＋'}</span>
+                      <span className="cm-card-title">
+                        {editingCharge ? 'Modifier la charge' : 'Nouvelle charge'}
+                      </span>
+                      {editingCharge && <span className="cm-card-badge">En édition</span>}
+                    </div>
+                    {editingCharge && (
+                      <button className="cm-btn-ghost-sm" onClick={handleCancelEdit}>✕ Annuler</button>
+                    )}
+                  </div>
+                  <div className="cm-card-body">
+                    <ChargeForm
+                      onAddCharge={handleAddCharge}
+                      editingCharge={editingCharge}
+                      onCancelEdit={handleCancelEdit}
+                    />
+                  </div>
+                </div>
+
+                <div className="cm-card">
+                  <div className="cm-card-header">
+                    <div className="cm-card-title-group">
+                      <span className="cm-card-icon">💳</span>
+                      <span className="cm-card-title">Toutes les charges</span>
+                      <span className="cm-card-badge">{filteredCharges.length}</span>
+                    </div>
+                    {(searchTerm || selectedCategory !== 'all') && (
+                      <button className="cm-btn-ghost-sm" onClick={handleClearFilters}>✕ Effacer filtres</button>
+                    )}
+                  </div>
+                  <div className="cm-card-body" style={{ paddingBottom: 0 }}>
+                    <ChargeFilter
+                      searchTerm={searchTerm}
+                      onSearchChange={setSearchTerm}
+                      selectedCategory={selectedCategory}
+                      onCategoryChange={setSelectedCategory}
+                      onClearFilters={handleClearFilters}
+                      totalResults={filteredCharges.length}
+                    />
+                  </div>
+                  <div className="cm-card-body" style={{ paddingTop: 0 }}>
+                    <ChargeList
+                      charges={filteredCharges}
+                      onEditCharge={handleEditCharge}
+                      onDeleteCharge={handleDeleteRequest}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeNav === 'calendrier' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📅</span>
+                    <span className="cm-card-title">Calendrier des échéances</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeCalendar charges={charges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'sessions' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">🗄️</span>
+                    <span className="cm-card-title">Gestion des sessions</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <SessionManager charges={charges} onImportCharges={handleImportCharges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'pdf' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📤</span>
+                    <span className="cm-card-title">Export PDF</span>
+                  </div>
+                </div>
+                <div className="cm-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+                  <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+                    Génère un rapport PDF complet avec les {charges.length} charges, totaux HT / TVA / TTC et répartition par catégorie.
+                  </p>
+                  <button
+                    className="cm-btn-primary"
+                    onClick={() => exportToPDF(charges, summary).catch(console.error)}
+                  >
+                    📤 Générer le PDF
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'rapports' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📋</span>
+                    <span className="cm-card-title">Synthèse</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeSummary summary={summary} charges={charges} />
+                </div>
+              </div>
+            )}
 
           </main>
+
         </div>
         {/* end shell */}
 
