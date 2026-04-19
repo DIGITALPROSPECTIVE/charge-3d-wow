@@ -11,7 +11,7 @@ import ChargeCalendar from './ChargeCalendar';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
 import { GooeyText } from '@/components/ui/gooey-text-morphing';
-import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+import WebGLFogBackground from './WebGLFogBackground';
 import ChargeCharts from './ChargeCharts';
 import { generateId, calculateTTC } from '../utils/chargeUtils';
 
@@ -138,9 +138,7 @@ const ChargeManager: React.FC = () => {
 
   return (
     <>
-    <div className="fixed inset-0 -z-10">
-      <BackgroundGradientAnimation containerClassName="h-full w-full" />
-    </div>
+    <WebGLFogBackground />
     <div className="relative z-10 min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6 lg:space-y-8">
         {/* En-tête avec titre */}
