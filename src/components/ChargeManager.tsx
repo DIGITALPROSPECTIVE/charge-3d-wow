@@ -1025,8 +1025,144 @@ const ChargeManager: React.FC = () => {
                 </div>
               </div>
             </div>
+            </>)}
+
+            {activeNav === 'analytics' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📈</span>
+                    <span className="cm-card-title">Analyse complète</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeCharts charges={charges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'charges' && (
+              <>
+                <div className="cm-card" id="cm-form-section">
+                  <div className="cm-card-header">
+                    <div className="cm-card-title-group">
+                      <span className="cm-card-icon">{editingCharge ? '✏️' : '＋'}</span>
+                      <span className="cm-card-title">
+                        {editingCharge ? 'Modifier la charge' : 'Nouvelle charge'}
+                      </span>
+                      {editingCharge && <span className="cm-card-badge">En édition</span>}
+                    </div>
+                    {editingCharge && (
+                      <button className="cm-btn-ghost-sm" onClick={handleCancelEdit}>✕ Annuler</button>
+                    )}
+                  </div>
+                  <div className="cm-card-body">
+                    <ChargeForm
+                      onAddCharge={handleAddCharge}
+                      editingCharge={editingCharge}
+                      onCancelEdit={handleCancelEdit}
+                    />
+                  </div>
+                </div>
+
+                <div className="cm-card">
+                  <div className="cm-card-header">
+                    <div className="cm-card-title-group">
+                      <span className="cm-card-icon">💳</span>
+                      <span className="cm-card-title">Toutes les charges</span>
+                      <span className="cm-card-badge">{filteredCharges.length}</span>
+                    </div>
+                    {(searchTerm || selectedCategory !== 'all') && (
+                      <button className="cm-btn-ghost-sm" onClick={handleClearFilters}>✕ Effacer filtres</button>
+                    )}
+                  </div>
+                  <div className="cm-card-body" style={{ paddingBottom: 0 }}>
+                    <ChargeFilter
+                      searchTerm={searchTerm}
+                      onSearchChange={setSearchTerm}
+                      selectedCategory={selectedCategory}
+                      onCategoryChange={setSelectedCategory}
+                      onClearFilters={handleClearFilters}
+                      totalResults={filteredCharges.length}
+                    />
+                  </div>
+                  <div className="cm-card-body" style={{ paddingTop: 0 }}>
+                    <ChargeList
+                      charges={filteredCharges}
+                      onEditCharge={handleEditCharge}
+                      onDeleteCharge={handleDeleteRequest}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeNav === 'calendrier' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📅</span>
+                    <span className="cm-card-title">Calendrier des échéances</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeCalendar charges={charges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'sessions' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">🗄️</span>
+                    <span className="cm-card-title">Gestion des sessions</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <SessionManager charges={charges} onImportCharges={handleImportCharges} />
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'pdf' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📤</span>
+                    <span className="cm-card-title">Export PDF</span>
+                  </div>
+                </div>
+                <div className="cm-card-body" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+                  <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+                    Génère un rapport PDF complet avec les {charges.length} charges, totaux HT / TVA / TTC et répartition par catégorie.
+                  </p>
+                  <button
+                    className="cm-btn-primary"
+                    onClick={() => exportToPDF(charges, summary).catch(console.error)}
+                  >
+                    📤 Générer le PDF
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeNav === 'rapports' && (
+              <div className="cm-card">
+                <div className="cm-card-header">
+                  <div className="cm-card-title-group">
+                    <span className="cm-card-icon">📋</span>
+                    <span className="cm-card-title">Synthèse</span>
+                  </div>
+                </div>
+                <div className="cm-card-body">
+                  <ChargeSummary summary={summary} charges={charges} />
+                </div>
+              </div>
+            )}
 
           </main>
+
         </div>
         {/* end shell */}
 
