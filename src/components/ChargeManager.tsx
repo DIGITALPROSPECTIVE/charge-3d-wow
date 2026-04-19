@@ -27,6 +27,16 @@ const DEMO_CHARGES: Charge[] = [
   { id: generateId(), description: 'Déplacement client', montantHT: 210, tauxTVA: 20, ...calculateTTC(210, 20), categorie: 'Transport', typeCharge: 'exceptionnelle', dateCreation: new Date('2026-04-02') },
 ];
 
+const PAGE_META: Record<string, { title: string; subtitle: string }> = {
+  dashboard:  { title: 'Dashboard',  subtitle: "Vue d'ensemble de vos charges professionnelles" },
+  analytics:  { title: 'Analytics',  subtitle: 'Graphiques détaillés et tendances de vos dépenses' },
+  charges:    { title: 'Charges',    subtitle: 'Liste complète, recherche et édition de vos charges' },
+  calendrier: { title: 'Calendrier', subtitle: 'Échéances à venir et dates de prélèvement' },
+  sessions:   { title: 'Sessions',   subtitle: 'Sauvegarde, import et export de vos données' },
+  pdf:        { title: 'PDF Export', subtitle: 'Générez un rapport PDF professionnel' },
+  rapports:   { title: 'Rapports',   subtitle: 'Synthèses par catégorie et par type de charge' },
+};
+
 const ChargeManager: React.FC = () => {
   const [charges, setCharges] = useState<Charge[]>([]);
   const [editingCharge, setEditingCharge] = useState<Charge | null>(null);
